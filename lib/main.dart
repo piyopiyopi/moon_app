@@ -45,13 +45,13 @@ class MyApp extends State<MainPage> {
   }
 
   void updateMoonList(String date) async{
-    //var uri = Uri.parse('https://o5m83blpl3.execute-api.us-east-1.amazonaws.com/rel/?date=' + date);
-    var uri = Uri.parse('https://o5m83blpl3.execute-api.us-east-1.amazonaws.com/rel/?date=2022');
-    setState(() {tmp = "loading";});
+    //var uri = Uri.parse('https://o5m83blpl3.execute-api.us-east-1.amazonaws.com/rel/updateMoonList?date=' + date);
+    var uri = Uri.parse("https://o5m83blpl3.execute-api.us-east-1.amazonaws.com/rel/?date=20220218000000");
     http.Response res = await http.get(uri);
-    setState(() {tmp = "loading...";});
+    getMoonList();
     if (res.statusCode == 200) {
-        setState(() {tmp = "ok!!!";});
+        print("updateMoonList");
+        setState(() {tmp = res.body;});
     } else {
         setState(() {tmp = "error!!!";});
     }
