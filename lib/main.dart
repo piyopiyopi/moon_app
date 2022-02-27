@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:table_calendar/table_calendar.dart';
+import "package:intl/intl.dart";
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -17,7 +18,6 @@ class MainPage extends StatefulWidget{
 class MyApp extends State<MainPage> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
-  Map<DateTime, List> _eventsList = {};
   String tmp = "header";
   Map<DateTime, List> moon_list = {};
   int getHashCode(DateTime key) {return key.day * 1000000 + key.month * 10000 + key.year;}
@@ -32,6 +32,7 @@ class MyApp extends State<MainPage> {
     var uri = Uri.parse('https://w4hirod1wb.execute-api.us-east-1.amazonaws.com/default/getMoonList');
     http.Response res = await http.get(uri);
     if (res.statusCode == 200) {
+        moon_list = {};
         Map<String, dynamic> map = jsonDecode(res.body);
         var data = MoonList.fromJson(map);
         setState(() {
@@ -45,16 +46,15 @@ class MyApp extends State<MainPage> {
   }
 
   void updateMoonList(String date) async{
-    //var uri = Uri.parse('https://o5m83blpl3.execute-api.us-east-1.amazonaws.com/rel/updateMoonList?date=' + date);
-    var uri = Uri.parse("https://o5m83blpl3.execute-api.us-east-1.amazonaws.com/rel/?date=20220218000000");
+    var uri = Uri.parse("https://o5m83blpl3.execute-api.us-east-1.amazonaws.com/rel/?date=" + date);
     http.Response res = await http.get(uri);
-    getMoonList();
     if (res.statusCode == 200) {
         print("updateMoonList");
         setState(() {tmp = res.body;});
     } else {
         setState(() {tmp = "error!!!";});
     }
+    getMoonList();
   }
 
   @override
@@ -74,7 +74,7 @@ class MyApp extends State<MainPage> {
         if (schedule == 'check') {
           return const Icon(
             Icons.favorite, 
-            color: Colors.yellow,
+            color: Colors.pinkAccent,
             size: 10
           );
         }else {
@@ -94,7 +94,11 @@ class MyApp extends State<MainPage> {
       return TableCalendar(
         locale: 'ja_JP',
         headerStyle: HeaderStyle(
+          titleCentered: true,
           formatButtonVisible: false,
+          titleTextStyle: TextStyle(color: Colors.brown, fontSize: 20),
+          leftChevronIcon: Icon(Icons.chevron_left, color: Colors.brown),
+          rightChevronIcon: Icon(Icons.chevron_right, color: Colors.brown),
         ),
         firstDay: DateTime.utc(2021, 3, 24),
         lastDay: DateTime.utc(2050, 12, 31),
@@ -103,29 +107,130 @@ class MyApp extends State<MainPage> {
         calendarFormat: CalendarFormat.month,
         selectedDayPredicate: (day) {return isSameDay(_selectedDay, day);},
         onDaySelected: (selectedDay, focusedDay) {
-          if (!isSameDay(_selectedDay, selectedDay)) {
-            setState(() {
-              _selectedDay = selectedDay;
-              _focusedDay = focusedDay;
-            });
-          }
-          updateMoonList("2022-02-10 00:00:00");
+          var formatter = new DateFormat('yyyyMMddHHmmss', "ja_JP");
+          updateMoonList(formatter.format(selectedDay));
         },
         onPageChanged: (focusedDay) {_focusedDay = focusedDay;},
         calendarBuilders: CalendarBuilders(
           markerBuilder: (context, date, events) {
             if (events.isNotEmpty) {return _buildEventsMarker(date, events);}
           },
-        )
+          dowBuilder: (context, day) {
+            return Center(
+              child: Text(
+                DateFormat.E().format(day),
+                style: TextStyle(color: Colors.brown),
+              ),
+            );
+          },
+          selectedBuilder: (BuildContext context, DateTime day, DateTime focusedDay) {
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              margin: const EdgeInsets.only(top: 20),
+              alignment: Alignment.topCenter,
+              child: Text(
+                day.day.toString(),
+                style: TextStyle(color: Colors.brown, fontWeight: FontWeight.bold),
+              ),
+            );
+          },
+          defaultBuilder: (BuildContext context, DateTime day, DateTime focusedDay) {
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              margin: const EdgeInsets.only(top: 20),
+              alignment: Alignment.topCenter,
+              child: Text(
+                day.day.toString(),
+                style: TextStyle(color: Colors.brown),
+              ),
+            );
+          },
+          disabledBuilder: (BuildContext context, DateTime day, DateTime focusedDay){
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              margin: const EdgeInsets.only(top: 20),
+              alignment: Alignment.topCenter,
+              child: Text(
+                day.day.toString(),
+                style: TextStyle(color: Colors.brown),
+              ),
+            );
+          }
+        ),
+      );
+    }
+    
+    // ハーフモーダル
+    Widget _buildModal(){
+      return DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.8,
+        maxChildSize: 0.8,
+        builder: (context, scrollController) => Container(
+          padding: const EdgeInsets.all(40),
+          child: Column(
+            children: <Widget>[
+              Text("hello world"),
+              Text("hello world"),
+              Text("hello world"),
+              Text("hello world"),
+              Text("hello world"),
+              Text("hello world"),
+              Text("hello world"),
+              Text("hello world"),
+              Text("hello world"),
+            ],
+          ),
+        ),
       );
     }
 
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: Text(tmp)),
-        backgroundColor: Colors.pinkAccent,
-        body: _buildCalendar(),
-      ),
+      home: Stack(
+        children: <Widget>[
+          Container(
+            height: double.infinity,
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('img/background.jpeg'),
+                fit: BoxFit.cover,
+              )
+            ),
+          ),
+          Scaffold(
+            backgroundColor: Colors.transparent,
+            body: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    alignment: Alignment.center,
+                    child: _buildCalendar(),
+                  ),
+                ],
+              ),
+            ),
+            floatingActionButton: Builder(
+              builder: (context) => FloatingActionButton(
+                backgroundColor: Colors.brown,
+                child: Icon(Icons.nightlight_rounded),
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+                    ),
+                    builder: (context) => _buildModal(),
+                  );
+                },
+              ),
+            )
+          ),
+        ],
+      )
     );
   }
 }
