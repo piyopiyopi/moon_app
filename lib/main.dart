@@ -18,7 +18,6 @@ class MainPage extends StatefulWidget{
 class MyApp extends State<MainPage> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
-  String tmp = "header";
   Map<DateTime, List> moon_list = {};
   int getHashCode(DateTime key) {return key.day * 1000000 + key.month * 10000 + key.year;}
 
@@ -50,9 +49,7 @@ class MyApp extends State<MainPage> {
     http.Response res = await http.get(uri);
     if (res.statusCode == 200) {
         print("updateMoonList");
-        setState(() {tmp = res.body;});
     } else {
-        setState(() {tmp = "error!!!";});
     }
     getMoonList();
   }
@@ -74,7 +71,7 @@ class MyApp extends State<MainPage> {
         if (schedule == 'check') {
           return const Icon(
             Icons.favorite, 
-            color: Colors.pinkAccent,
+            color: Color.fromARGB(255, 213, 26, 44),
             size: 10
           );
         }else {
@@ -92,13 +89,12 @@ class MyApp extends State<MainPage> {
     // カレンダー
     Widget _buildCalendar(){
       return TableCalendar(
-        locale: 'ja_JP',
         headerStyle: HeaderStyle(
           titleCentered: true,
           formatButtonVisible: false,
-          titleTextStyle: TextStyle(color: Colors.brown, fontSize: 20),
-          leftChevronIcon: Icon(Icons.chevron_left, color: Colors.brown),
-          rightChevronIcon: Icon(Icons.chevron_right, color: Colors.brown),
+          leftChevronIcon: Icon(Icons.chevron_left, color: Color.fromARGB(255, 143, 81, 98)),
+          rightChevronIcon: Icon(Icons.chevron_right, color: Color.fromARGB(255, 143, 81, 98)),
+          titleTextStyle: TextStyle(color: Color.fromARGB(255, 143, 81, 98), fontSize: 20),
         ),
         firstDay: DateTime.utc(2021, 3, 24),
         lastDay: DateTime.utc(2050, 12, 31),
@@ -119,7 +115,7 @@ class MyApp extends State<MainPage> {
             return Center(
               child: Text(
                 DateFormat.E().format(day),
-                style: TextStyle(color: Colors.brown),
+                style: TextStyle(color: Color.fromARGB(255, 143, 81, 98)),
               ),
             );
           },
@@ -130,7 +126,7 @@ class MyApp extends State<MainPage> {
               alignment: Alignment.topCenter,
               child: Text(
                 day.day.toString(),
-                style: TextStyle(color: Colors.brown, fontWeight: FontWeight.bold),
+                style: TextStyle(color: Color.fromARGB(255, 143, 81, 98), fontWeight: FontWeight.bold),
               ),
             );
           },
@@ -141,7 +137,7 @@ class MyApp extends State<MainPage> {
               alignment: Alignment.topCenter,
               child: Text(
                 day.day.toString(),
-                style: TextStyle(color: Colors.brown),
+                style: TextStyle(color: Color.fromARGB(255, 143, 81, 98), fontFamily: "PoppinsMedium"),
               ),
             );
           },
@@ -152,7 +148,7 @@ class MyApp extends State<MainPage> {
               alignment: Alignment.topCenter,
               child: Text(
                 day.day.toString(),
-                style: TextStyle(color: Colors.brown),
+                style: TextStyle(color: Color.fromARGB(255, 143, 81, 98)),
               ),
             );
           }
@@ -170,15 +166,7 @@ class MyApp extends State<MainPage> {
           padding: const EdgeInsets.all(40),
           child: Column(
             children: <Widget>[
-              Text("hello world"),
-              Text("hello world"),
-              Text("hello world"),
-              Text("hello world"),
-              Text("hello world"),
-              Text("hello world"),
-              Text("hello world"),
-              Text("hello world"),
-              Text("hello world"),
+              Text("aaa"),
             ],
           ),
         ),
@@ -213,7 +201,7 @@ class MyApp extends State<MainPage> {
             ),
             floatingActionButton: Builder(
               builder: (context) => FloatingActionButton(
-                backgroundColor: Colors.brown,
+                backgroundColor: Color.fromARGB(255, 143, 81, 98),
                 child: Icon(Icons.nightlight_rounded),
                 onPressed: () {
                   showModalBottomSheet(
