@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -7,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:collection';
 import 'package:moon_app/JsonStruct.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   initializeDateFormatting().then((_) => runApp(MainPage()));
@@ -92,8 +95,8 @@ class MyApp extends State<MainPage> {
         headerStyle: HeaderStyle(
           titleCentered: true,
           formatButtonVisible: false,
-          leftChevronIcon: Icon(Icons.chevron_left, color: Color.fromARGB(255, 143, 81, 98)),
-          rightChevronIcon: Icon(Icons.chevron_right, color: Color.fromARGB(255, 143, 81, 98)),
+          leftChevronVisible: false,
+          rightChevronVisible: false,
           titleTextStyle: TextStyle(color: Color.fromARGB(255, 143, 81, 98), fontSize: 20),
         ),
         firstDay: DateTime.utc(2021, 3, 24),
@@ -122,8 +125,7 @@ class MyApp extends State<MainPage> {
           selectedBuilder: (BuildContext context, DateTime day, DateTime focusedDay) {
             return AnimatedContainer(
               duration: const Duration(milliseconds: 250),
-              margin: const EdgeInsets.only(top: 20),
-              alignment: Alignment.topCenter,
+              alignment: Alignment.center,
               child: Text(
                 day.day.toString(),
                 style: TextStyle(color: Color.fromARGB(255, 143, 81, 98), fontWeight: FontWeight.bold),
@@ -133,18 +135,16 @@ class MyApp extends State<MainPage> {
           defaultBuilder: (BuildContext context, DateTime day, DateTime focusedDay) {
             return AnimatedContainer(
               duration: const Duration(milliseconds: 250),
-              margin: const EdgeInsets.only(top: 20),
-              alignment: Alignment.topCenter,
+              alignment: Alignment.center,
               child: Text(
                 day.day.toString(),
-                style: TextStyle(color: Color.fromARGB(255, 143, 81, 98), fontFamily: "PoppinsMedium"),
+                style: TextStyle(color: Color.fromARGB(255, 143, 81, 98)),
               ),
             );
           },
           disabledBuilder: (BuildContext context, DateTime day, DateTime focusedDay){
             return AnimatedContainer(
               duration: const Duration(milliseconds: 250),
-              margin: const EdgeInsets.only(top: 20),
               alignment: Alignment.topCenter,
               child: Text(
                 day.day.toString(),
@@ -158,22 +158,95 @@ class MyApp extends State<MainPage> {
     
     // ハーフモーダル
     Widget _buildModal(){
+      var arr = [];
+      for(var item in moon_list.keys){arr.add(item);}
       return DraggableScrollableSheet(
         expand: false,
         initialChildSize: 0.8,
         maxChildSize: 0.8,
         builder: (context, scrollController) => Container(
-          padding: const EdgeInsets.all(40),
-          child: Column(
-            children: <Widget>[
-              Text("aaa"),
+          child: Stack(children: [
+              Container(
+                padding: const EdgeInsets.only(top:100, bottom: 50, right: 120, left: 120),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  image: DecorationImage(
+                    image: AssetImage('img/modal_background.png'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: SingleChildScrollView(
+                  child: Table(
+                    children: [
+                      for(var i=0; i<(arr.length-1); i++)...{
+                        TableRow(
+                          children: [
+                            Center(
+                              child: Container(
+                                height: 50,
+                                child: Text(
+                                  DateFormat('yyyy.MM.dd').format(arr[i]),
+                                  style: TextStyle(color: Color.fromARGB(255, 213, 132, 140)),
+                                ),
+                              ),
+                            ),
+                            Center(
+                              child: Text(
+                                arr[i].difference(arr[i+1]).inDays.toString(),
+                                style: TextStyle(color: Color.fromARGB(255, 213, 132, 140)),
+                              )
+                            ),
+                          ]
+                        ),
+                      },
+                    ],
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.only(top:50, right: 120, left: 120),
+                child: Table(
+                  children: [
+                    TableRow(
+                      children: [
+                        Center(child: 
+                          Container(
+                            height: 50,
+                            child: Text(
+                              "Start Date", 
+                              style: TextStyle(
+                                color: Color.fromARGB(255, 143, 81, 98), fontSize: 20, fontWeight: FontWeight.bold
+                              )
+                            )
+                          ),
+                        ),
+                        Center(child: 
+                          Text(
+                            "Period", 
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 143, 81, 98), fontSize: 20, fontWeight: FontWeight.bold
+                            )
+                          )
+                        ),
+                      ]
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
+          
         ),
       );
     }
 
     return MaterialApp(
+      theme: ThemeData(
+        textTheme: GoogleFonts.satisfyTextTheme(
+          Theme.of(context).textTheme
+        ),
+        
+      ),
       home: Stack(
         children: <Widget>[
           Container(
@@ -181,7 +254,7 @@ class MyApp extends State<MainPage> {
             width: double.infinity,
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('img/background.jpeg'),
+                image: AssetImage('img/background.png'),
                 fit: BoxFit.cover,
               )
             ),
@@ -200,14 +273,13 @@ class MyApp extends State<MainPage> {
               ),
             ),
             floatingActionButton: Builder(
-              builder: (context) => FloatingActionButton(
-                backgroundColor: Color.fromARGB(255, 143, 81, 98),
-                child: Icon(Icons.nightlight_rounded),
+              builder: (context) => IconButton(
+                icon: Icon(Icons.nightlight_rounded),
+                color: Colors.white,
                 onPressed: () {
                   showModalBottomSheet(
                     context: context,
                     isScrollControlled: true,
-                    backgroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
                     ),
